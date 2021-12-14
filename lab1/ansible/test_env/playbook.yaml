@@ -1,0 +1,36 @@
+---
+# This is a test Ansible Playbook
+
+- name: Ensure Git is installed
+  hosts: all
+  tags: [ 'install-git' ]
+  tasks:
+
+  - package: name=git state=latest
+    when: ansible_os_family == 'Debian'
+
+- name: Ensure ~/.gitconfig copied from master.gitconfig
+  hosts: webserver
+  tasks:
+
+  - name: first show no config in targets
+    command: git config --global --list
+    ignore_errors: yes
+    register: git_config_before # How to register variables
+    
+  - name: Show git config output
+    debug: var=git_config_before # How to use variables
+
+  - name: Copy master.gitconfig to hosts
+    copy: src=./files/master.gitconfig dest=~/.gitconfig
+
+  - name: Show newly added config
+    command: git config --global --list
+    ignore_errors: yes
+    register: git_config_after
+
+  - name: Ensure to show git config afterwards - This time only show stdout_lines
+    debug: var=git_config_after.stdout_lines
+
+  - name: Simplify git config output
+    git_config: list_all=yes scope=global
