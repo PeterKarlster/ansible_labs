@@ -1,0 +1,37 @@
+version: '3'
+services:
+  ansible-controller:
+    build:
+      context: ./ansible
+      args:
+        WORKDIR: /root/test_env
+    volumes:
+      - ./ansible/test_env:/root/test_env
+    environment:
+      - ANSIBLE_CONFIG=/root/test_env
+    networks:
+      - ansible
+  websrv1:
+    build:
+      context: ./nginx
+    networks:
+      - ansible
+  websrv2:
+    build:
+      context: ./nginx
+    networks:
+      - ansible
+  dbsrv1:
+    build:
+      context: ./cassandra
+    networks:
+      - ansible
+  dbsrv2:
+    build:
+      context: ./cassandra
+    networks:
+      - ansible
+
+networks:
+  ansible:
+    driver: bridge

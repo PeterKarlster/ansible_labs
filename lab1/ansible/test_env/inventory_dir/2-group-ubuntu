@@ -1,0 +1,3 @@
+[ubuntu:children]
+dbserver
+webserver
